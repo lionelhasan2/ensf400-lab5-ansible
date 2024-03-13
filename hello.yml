@@ -49,3 +49,35 @@
     command: forever start /node-app/app.js
     when: "forever_list.stdout.find('/node-app/app.js') == -1"
 
+    
+- hosts: localhost
+  tasks:
+    - name: Ensure Nginx is installed and it is the latest version
+      apt:
+        name: nginx
+        state: latest
+   
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+      become: yes
+    
+    - name: Copy the Nginx config file and restart nginx
+      copy:
+        src: /workspaces/ensf400-lab5-ansible/nginx.conf
+        dest: /etc/nginx/sites-available/nginx.cfg
+      become: yes
+     
+    - name: Create symlink
+      file:
+        src: /etc/nginx/sites-available/nginx.cfg
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      become: yes
+
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+      become: yes
