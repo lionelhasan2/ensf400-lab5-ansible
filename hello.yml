@@ -50,40 +50,32 @@
     command: forever start /node-app/app.js
     when: "forever_list.stdout.find('/node-app/app.js') == -1"
 
-    
-- hosts: loadbalancer
+- name: Nori
+  hosts: localhost
   tasks:
     - name: Ensure Nginx is installed and it is the latest version
       apt:
         name: nginx
         state: latest
-   
+      become: yes
     - name: Start Nginx
       service:
         name: nginx
         state: started
       become: yes
 
-
-    - name: Copy the Nginx config file to /etc/nginx/conf.d and restart nginx 
-      copy:
-        src: /workspaces/ensf400-lab5-ansible/nginx.cfg
-        dest: /etc/nginx/conf.d/default.conf
-      become: yes
-    
-
-    - name: Copy the Nginx config file to /etc/nginx/nginx.conf and restart nginx 
+    - name: Editing the primary conf file
       copy:
         src: /workspaces/ensf400-lab5-ansible/nginx.cfg
         dest: /etc/nginx/nginx.conf
       become: yes
-    
+
     - name: Copy the Nginx config file and restart nginx
       copy:
         src: /workspaces/ensf400-lab5-ansible/nginx.cfg
         dest: /etc/nginx/sites-available/nginx.cfg
       become: yes
-     
+
     - name: Create symlink
       file:
         src: /etc/nginx/sites-available/nginx.cfg
