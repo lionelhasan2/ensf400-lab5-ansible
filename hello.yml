@@ -50,14 +50,26 @@
     command: forever start /node-app/app.js
     when: "forever_list.stdout.find('/node-app/app.js') == -1"
 
-- name: Nori
-  hosts: localhost
+- name: Set up load balancer on localhost 
+  hosts: loadbalancer
   tasks:
+    - name: Update cache
+      apt: 
+        update_cache: yes 
+      become: yes
+
+    - name: Install nginx files
+      apt: 
+        name: nginx-full
+        state: latest
+      become: yes
+        
     - name: Ensure Nginx is installed and it is the latest version
       apt:
         name: nginx
         state: latest
       become: yes
+
     - name: Start Nginx
       service:
         name: nginx
